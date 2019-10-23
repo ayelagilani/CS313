@@ -14,7 +14,7 @@ public class ClientInteger {
 
 
     public ClientInteger() throws IOException, SocketTimeoutException, InterruptedException {
-        System.out.println("ClientString Started");
+        System.out.println("ClientInteger Started");
         IPAddress = InetAddress.getByName(hostname);
         socket = new DatagramSocket();
         buffer = new byte[512];
