@@ -4,12 +4,12 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ServerCommandString {
+public class ServerCommandObject {
 
     private ServerSocket server;
     private Socket socket;
 
-    public ServerCommandString() throws IOException {
+    public ServerCommandObject() throws IOException {
         server = new ServerSocket(5000);
         System.out.println("Waiting for client");
 
@@ -24,25 +24,34 @@ public class ServerCommandString {
 
         try {
             ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-            String command = (String) inStream.readObject();
+            Object command = inStream.readObject();
             System.out.println("Received Command: " + command);
 
-            String[] commandInfo = command.split(" ");
+            String[] commandInfo = command.toString().split(" ");
 
 
             // Process Command
             switch (commandInfo[0]) {
                 case "getFirstName":
-                    Send(commandInfo[1]);
+                    commandInfo[(commandInfo.length)-1] = commandInfo[1];
+                    String returnObject = commandInfo[0] + " " + commandInfo[1] + " " + commandInfo[2] + " " + commandInfo[3];
+                    Send(returnObject);
                     break;
                 case "getLastName":
-                    Send(commandInfo[2]);
+                    commandInfo[(commandInfo.length)-1] = commandInfo[2];
+                    returnObject = commandInfo[0] + " " + commandInfo[1] + " " + commandInfo[2] + " " + commandInfo[3];
+                    Send(returnObject);
                     break;
-                case "getUpperCase":
-                    Send(commandInfo[1].toUpperCase());
+                case "getUpperCase": //returns first name
+                    commandInfo[(commandInfo.length)-1] = commandInfo[1].toUpperCase();
+                    returnObject = commandInfo[0] + " " + commandInfo[1] + " " + commandInfo[2] + " " + commandInfo[3];
+                    Send(returnObject);
                     break;
-                case "getLowerCase":
-                    Send(commandInfo[1].toLowerCase());
+                case "getFirstLetterCase":
+                    String[] field = commandInfo[1].split(commandInfo[1].substring(1));
+                    commandInfo[(commandInfo.length)-1] = field[0];
+                    returnObject = commandInfo[0] + " " + commandInfo[1] + " " + commandInfo[2] + " " + commandInfo[3];
+                    Send(returnObject);
                     break;
             }
 
@@ -53,7 +62,7 @@ public class ServerCommandString {
         }
     }
 
-    private void Send(String data)
+    private void Send(Object data)
     {
         try {
             ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
@@ -66,7 +75,7 @@ public class ServerCommandString {
 
     public static void main(String[] args){
         try {
-            ServerCommandString server = new ServerCommandString();
+            ServerCommandObject server = new ServerCommandObject();
 
             server.ServerReceive();
         }catch(Exception e){}
